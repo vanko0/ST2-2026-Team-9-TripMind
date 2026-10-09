@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using TripMind.Data;
+
 namespace TripMind
 {
     public class Program
@@ -5,6 +8,8 @@ namespace TripMind
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            builder.Services.AddDbContext<TripMindDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
