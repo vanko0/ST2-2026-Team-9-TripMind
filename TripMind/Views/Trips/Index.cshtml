@@ -1,0 +1,50 @@
+﻿@model List<TripMind.Models.Trip>
+
+<h1>Trips</h1>
+
+<form method="get" class="row g-2 mb-4">
+    <div class="col-md-3">
+        <input type="text" name="destination" class="form-control"
+               placeholder="Destination" value="@ViewData["destination"]" />
+    </div>
+    <div class="col-md-3">
+        <input type="number" name="maxBudget" class="form-control"
+               placeholder="Max budget" value="@ViewData["maxBudget"]" />
+    </div>
+    <div class="col-md-3">
+        <select name="travelStyle" class="form-select">
+            <option value="">All styles</option>
+            <option value="Budget">Budget</option>
+            <option value="Balanced">Balanced</option>
+            <option value="Luxury">Luxury</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <button type="submit" class="btn btn-primary">Filter</button>
+        <a asp-action="Index" class="btn btn-secondary">Clear</a>
+    </div>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Destination</th>
+            <th>Dates</th>
+            <th>Travelers</th>
+            <th>Budget</th>
+            <th>Style</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var t in Model)
+        {
+            <tr>
+                <td>@t.Destination</td>
+                <td>@t.StartDate - @t.EndDate</td>
+                <td>@t.Travelers</td>
+                <td>@t.Budget</td>
+                <td>@t.TravelStyle</td>
+            </tr>
+        }
+    </tbody>
+</table>

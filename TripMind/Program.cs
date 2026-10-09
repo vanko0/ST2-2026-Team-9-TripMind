@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using TripMind.Data;
+using TripMind.Repositories;
 
 namespace TripMind
 {
@@ -13,6 +14,7 @@ namespace TripMind
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            builder.Services.AddScoped<ITripRepository, TripRepository>();
 
             var app = builder.Build();
 
