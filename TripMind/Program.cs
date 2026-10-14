@@ -35,7 +35,7 @@ namespace TripMind
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                 pattern: "{controller=Trips}/{action=Index}/{id?}");
 
             app.Run();
         }
