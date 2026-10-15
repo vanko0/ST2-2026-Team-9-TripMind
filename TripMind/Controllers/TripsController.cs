@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TripMind.Repositories;
+using TripMind.Services;
 
 namespace TripMind.Controllers;
 
@@ -20,5 +21,10 @@ public class TripsController : Controller
 
         var trips = await _repo.GetFilteredAsync(destination, maxBudget, travelStyle);
         return View(trips);
+    }
+
+    public IActionResult Log()
+    {
+        return View(AppLogger.Instance.GetEntries());
     }
 }
