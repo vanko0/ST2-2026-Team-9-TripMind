@@ -31,4 +31,28 @@ public class TripRepository : ITripRepository
 
         return await query.OrderBy(t => t.StartDate).ToListAsync();
     }
+
+    // SELECT by id
+    public async Task<Trip?> GetByIdAsync(int id)
+    {
+        return await _db.Trips.FindAsync(id);
+    }
+
+    // UPDATE
+    public async Task<bool> UpdateAsync(Trip trip)
+    {
+        var existing = await _db.Trips.FindAsync(trip.Id);
+        if (existing == null)
+            return false;
+
+        existing.Destination = trip.Destination;
+        existing.StartDate = trip.StartDate;
+        existing.EndDate = trip.EndDate;
+        existing.Budget = trip.Budget;
+        existing.Travelers = trip.Travelers;
+        existing.TravelStyle = trip.TravelStyle;
+
+        await _db.SaveChangesAsync();
+        return true;
+    }
 }

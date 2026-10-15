@@ -33,6 +33,7 @@
             <th>Travelers</th>
             <th>Budget</th>
             <th>Style</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -44,6 +45,9 @@
                 <td>@t.Travelers</td>
                 <td>@t.Budget</td>
                 <td>@t.TravelStyle</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@t.Id" class="btn btn-sm btn-outline-primary">Edit</a>
+                </td>
             </tr>
         }
     </tbody>

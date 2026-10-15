@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TripMind.Models;
 using TripMind.Repositories;
 
 namespace TripMind.Controllers;
@@ -20,5 +21,36 @@ public class TripsController : Controller
 
         var trips = await _repo.GetFilteredAsync(destination, maxBudget, travelStyle);
         return View(trips);
+    }
+
+    // GET: Trips/Edit/5
+    public async Task<IActionResult> Edit(int id)
+    {
+        var trip = await _repo.GetByIdAsync(id);
+        if (trip == null)
+            return NotFound();
+
+        return View(trip);
+    }
+
+    // POST: Trips/Edit/5
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(int id, Trip trip)
+    {
+        if (id != trip.Id)
+            return BadRequest();
+
+        if (trip.EndDate < trip.StartDate)
+            ModelState.AddModelError(nameof(trip.EndDate), "End date cannot be before start date.");
+
+        if (!ModelState.IsValid)
+            return View(trip);
+
+        var updated = await _repo.UpdateAsync(trip);
+        if (!updated)
+            return NotFound();
+
+        return RedirectToAction(nameof(Index));
     }
 }
