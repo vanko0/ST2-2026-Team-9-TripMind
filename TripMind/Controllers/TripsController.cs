@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TripMind.Models;
 using TripMind.Repositories;
+using TripMind.Services;
 
 namespace TripMind.Controllers;
 
@@ -22,7 +23,6 @@ public class TripsController : Controller
         var trips = await _repo.GetFilteredAsync(destination, maxBudget, travelStyle);
         return View(trips);
     }
-
     // GET: Trips/Update/5
     public async Task<IActionResult> Update(int id)
     {
@@ -53,4 +53,10 @@ public class TripsController : Controller
 
         return RedirectToAction(nameof(Index));
     }
+
+    public IActionResult Log()
+    {
+        return View(AppLogger.Instance.GetEntries());
+    }
 }
+

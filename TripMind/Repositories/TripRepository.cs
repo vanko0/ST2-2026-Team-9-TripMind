@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TripMind.Data;
 using TripMind.Models;
+using TripMind.Services;
 
 namespace TripMind.Repositories;
 
@@ -18,6 +19,7 @@ public class TripRepository : ITripRepository
     // SELECT with filter
     public async Task<List<Trip>> GetFilteredAsync(string? destination, decimal? maxBudget, string? travelStyle)
     {
+        AppLogger.Instance.Log("Trips filtered");
         var query = _db.Trips.AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(destination))
