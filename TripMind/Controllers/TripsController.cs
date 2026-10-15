@@ -23,8 +23,8 @@ public class TripsController : Controller
         return View(trips);
     }
 
-    // GET: Trips/Edit/5
-    public async Task<IActionResult> Edit(int id)
+    // GET: Trips/Update/5
+    public async Task<IActionResult> Update(int id)
     {
         var trip = await _repo.GetByIdAsync(id);
         if (trip == null)
@@ -33,10 +33,10 @@ public class TripsController : Controller
         return View(trip);
     }
 
-    // POST: Trips/Edit/5
+    // POST: Trips/Update/5
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, Trip trip)
+    public async Task<IActionResult> Update(int id, Trip trip)
     {
         if (id != trip.Id)
             return BadRequest();
