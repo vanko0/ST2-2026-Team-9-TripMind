@@ -1,0 +1,33 @@
+﻿<div id="chat-widget">
+    <button id="chat-toggle" type="button" aria-label="Open chat">
+        <span class="chat-icon-open">💬</span>
+        <span class="chat-icon-close">✕</span>
+    </button>
+
+    <div id="chat-panel" class="chat-hidden" role="dialog" aria-label="TripMind Assistant">
+        <div class="chat-header">
+            <div class="chat-header-info">
+                <div class="chat-avatar">✈️</div>
+                <div>
+                    <div class="chat-title">TripMind Assistant</div>
+                    <div class="chat-subtitle">Ask me about your trips</div>
+                </div>
+            </div>
+            <button id="chat-clear" type="button" class="chat-icon-btn" title="New chat">🗑</button>
+        </div>
+
+        <div id="chat-messages" class="chat-messages"></div>
+
+        <div id="chat-suggestions" class="chat-suggestions">
+            <button type="button" class="chat-chip">Where should I go in spring?</button>
+            <button type="button" class="chat-chip">What should I pack?</button>
+            <button type="button" class="chat-chip">Tell me about my trips</button>
+        </div>
+
+        <div class="chat-input-row">
+            <input id="chat-input" type="text" maxlength="500"
+                   placeholder="Type your question..." autocomplete="off" />
+            <button id="chat-send" type="button" aria-label="Send">➤</button>
+        </div>
+    </div>
+</div>
