@@ -80,18 +80,39 @@ public class GeminiService : IGeminiService
         };
 
         var url = $"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent";
-        using var req = new HttpRequestMessage(HttpMethod.Post, url)
+        var json = JsonSerializer.Serialize(body);
+
+        HttpResponseMessage res = null!;
+        for (var attempt = 1; attempt <= 3; attempt++)
         {
-            Content = new StringContent(JsonSerializer.Serialize(body), Encoding.UTF8, "application/json")
-        };
-        req.Headers.Add("x-goog-api-key", apiKey);
+            using var req = new HttpRequestMessage(HttpMethod.Post, url)
+            {
+                Content = new StringContent(json, Encoding.UTF8, "application/json")
+            };
+            req.Headers.Add("x-goog-api-key", apiKey);
 
-        using var res = await _http.SendAsync(req);
-        res.EnsureSuccessStatusCode();
+            res = await _http.SendAsync(req);
 
-        using var doc = JsonDocument.Parse(await res.Content.ReadAsStringAsync());
-        return doc.RootElement.GetProperty("candidates")[0]
-            .GetProperty("content").GetProperty("parts")[0]
-            .GetProperty("text").GetString() ?? "";
+            var code = (int)res.StatusCode;
+            if (res.IsSuccessStatusCode || (code != 503 && code != 429) || attempt == 3)
+                break;
+
+            res.Dispose();
+            await Task.Delay(1000 * attempt);   // чака 1 сек., после 2 сек.
+        }
+
+        using (res)
+        {
+            if (!res.IsSuccessStatusCode)
+            {
+                var err = await res.Content.ReadAsStringAsync();
+                throw new HttpRequestException($"Gemini {(int)res.StatusCode}: {err}");
+            }
+
+            using var doc = JsonDocument.Parse(await res.Content.ReadAsStringAsync());
+            return doc.RootElement.GetProperty("candidates")[0]
+                .GetProperty("content").GetProperty("parts")[0]
+                .GetProperty("text").GetString() ?? "";
+        }
     }
 }
