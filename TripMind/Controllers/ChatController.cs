@@ -9,10 +9,12 @@ namespace TripMind.Controllers;
 public class ChatController : ControllerBase
 {
     private readonly IGeminiService _gemini;
+    private readonly ILogger<ChatController> _logger;
 
-    public ChatController(IGeminiService gemini)
+    public ChatController(IGeminiService gemini, ILogger<ChatController> logger)
     {
         _gemini = gemini;
+        _logger = logger;
     }
 
     [HttpPost]
@@ -23,12 +25,13 @@ public class ChatController : ControllerBase
 
         try
         {
-            AppLogger.Instance.Log("Chat message received"); 
+            AppLogger.Instance.Log("Chat message received");
             var reply = await _gemini.AskAsync(req.Message, req.History);
             return Ok(new ChatResponse(reply));
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Chat failed");
             AppLogger.Instance.Log($"Chat error: {ex.Message}");
             return StatusCode(503, new { error = "Чатботът не е наличен в момента. Опитай пак по-късно." });
         }

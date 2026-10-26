@@ -53,7 +53,7 @@ public class GeminiService : IGeminiService
     {
         var apiKey = _config["Gemini:ApiKey"]
             ?? throw new InvalidOperationException("Липсва Gemini:ApiKey");
-        var model = _config["Gemini:Model"] ?? "gemini-flash-latest";
+        var model = _config["Gemini:Model"] ?? "gemini-3.5-flash";
 
         var trips = await _repo.GetFilteredAsync(null, null, null);
         var tripsText = trips.Count == 0
@@ -65,7 +65,7 @@ public class GeminiService : IGeminiService
         var systemPrompt = BasePrompt + "\n" + tripsText;
 
         var contents = new List<object>();
-        foreach (var turn in (history ?? new()).TakeLast(10))
+        foreach (var turn in (history ?? new()).TakeLast(6))
             contents.Add(new
             {
                 role = turn.Role == "model" ? "model" : "user",
@@ -76,7 +76,12 @@ public class GeminiService : IGeminiService
         var body = new
         {
             systemInstruction = new { parts = new[] { new { text = systemPrompt } } },
-            contents
+            contents,
+            generationConfig = new
+            {
+                maxOutputTokens = 400,
+                thinkingConfig = new { thinkingBudget = 0 }
+            }
         };
 
         var url = $"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent";
