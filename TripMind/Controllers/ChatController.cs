@@ -23,7 +23,7 @@ public class ChatController : ControllerBase
 
         try
         {
-            AppLogger.Instance.Log("Chat message received"); // без текста: /Trips/Log е публична страница
+            AppLogger.Instance.Log("Chat message received"); 
             var reply = await _gemini.AskAsync(req.Message, req.History);
             return Ok(new ChatResponse(reply));
         }
