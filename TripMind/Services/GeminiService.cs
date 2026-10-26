@@ -53,7 +53,7 @@ public class GeminiService : IGeminiService
     {
         var apiKey = _config["Gemini:ApiKey"]
             ?? throw new InvalidOperationException("Липсва Gemini:ApiKey");
-        var model = _config["Gemini:Model"] ?? "gemini-3.8-flash";
+        var model = _config["Gemini:Model"] ?? "gemini-2.5-flash";
 
         var trips = await _repo.GetFilteredAsync(null, null, null);
         var tripsText = trips.Count == 0
