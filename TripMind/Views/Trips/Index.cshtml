@@ -1,6 +1,10 @@
 ﻿@model List<TripMind.Models.Trip>
+@{
+    ViewData["Title"] = "My Flights";
+    var style = ViewData["travelStyle"] as string;
+}
 
-<h1>Trips</h1>
+<h1>My Flights</h1>
 
 <form method="get" class="row g-2 mb-4">
     <div class="col-md-3">
@@ -14,9 +18,9 @@
     <div class="col-md-3">
         <select name="travelStyle" class="form-select">
             <option value="">All styles</option>
-            <option value="Budget">Budget</option>
-            <option value="Balanced">Balanced</option>
-            <option value="Luxury">Luxury</option>
+            <option value="Budget" selected="@(style == "Budget")">Budget</option>
+            <option value="Balanced" selected="@(style == "Balanced")">Balanced</option>
+            <option value="Luxury" selected="@(style == "Luxury")">Luxury</option>
         </select>
     </div>
     <div class="col-md-3">
@@ -25,30 +29,49 @@
     </div>
 </form>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Destination</th>
-            <th>Dates</th>
-            <th>Travelers</th>
-            <th>Budget</th>
-            <th>Style</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var t in Model)
-        {
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        You haven't booked any flights yet.
+        <a asp-controller="Home" asp-action="Index">Find a flight</a>
+    </div>
+}
+else
+{
+    <table class="table">
+        <thead>
             <tr>
-                <td>@t.Destination</td>
-                <td>@t.StartDate - @t.EndDate</td>
-                <td>@t.Travelers</td>
-                <td>@t.Budget</td>
-                <td>@t.TravelStyle</td>
-                <td>
-                    <a asp-action="Update" asp-route-id="@t.Id" class="btn btn-sm btn-outline-primary">Update</a>
-                </td>
+                <th>From</th>
+                <th>Destination</th>
+                <th>Dates</th>
+                <th>Travelers</th>
+                <th>Budget</th>
+                <th>Style</th>
+                <th></th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var t in Model)
+            {
+                <tr>
+                    <td>@t.From</td>
+                    <td>@t.Destination</td>
+                    <td>@t.StartDate.ToString("dd MMM yyyy") - @t.EndDate.ToString("dd MMM yyyy")</td>
+                    <td>@t.Travelers</td>
+                    <td>@t.Budget €</td>
+                    <td>@t.TravelStyle</td>
+                    <td>
+                        <a asp-action="Update" asp-route-id="@t.Id" class="btn btn-sm btn-outline-primary">Update</a>
+
+                        <form asp-action="Cancel" asp-route-id="@t.Id" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-outline-danger"
+                                    onclick="return confirm('Cancel this booking?');">
+                                Cancel booking
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

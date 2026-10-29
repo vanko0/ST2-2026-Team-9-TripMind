@@ -55,9 +55,9 @@ public class GeminiService : IGeminiService
             ?? throw new InvalidOperationException("Липсва Gemini:ApiKey");
         var model = _config["Gemini:Model"] ?? "gemini-3.5-flash";
 
-        var trips = await _repo.GetFilteredAsync(null, null, null);
-        var tripsText = trips.Count == 0
-            ? "(няма запазени пътувания)"
+        var trips = await _repo.GetFilteredAsync(null, null, null, null);
+        var tripsText = trips.Count == 0 ?
+             "(няма запазени пътувания)"
             : string.Join("\n", trips.Take(20).Select(t =>
                 $"- {t.Destination}, {t.StartDate:yyyy-MM-dd} до {t.EndDate:yyyy-MM-dd}, " +
                 $"{t.Travelers} пътуващи, бюджет {t.Budget}, стил {t.TravelStyle}"));
@@ -103,7 +103,7 @@ public class GeminiService : IGeminiService
                 break;
 
             res.Dispose();
-            await Task.Delay(1000 * attempt);   // чака 1 сек., после 2 сек.
+            await Task.Delay(1000 * attempt);   
         }
 
         using (res)

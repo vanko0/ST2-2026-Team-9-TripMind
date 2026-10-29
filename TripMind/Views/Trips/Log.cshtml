@@ -1,44 +1,49 @@
 ﻿@model List<TripMind.Services.LogEntry>
+@{
+    ViewData["Title"] = "Logs";
+}
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h1 class="mb-0">Activity Log</h1>
-        <p class="text-muted mb-0">Everything the app did since it started</p>
-    </div>
-    <a asp-action="Index" class="btn btn-outline-primary">&larr; Back to trips</a>
-</div>
-
-<div class="card shadow-sm">
-    <div class="card-header d-flex justify-content-between align-items-center bg-white">
-        <strong>Entries</strong>
-        <span class="badge bg-primary rounded-pill">@Model.Count</span>
-    </div>
-
-    @if (Model.Count == 0)
-    {
-        <div class="card-body text-center text-muted py-5">
-            <div class="fs-1">📭</div>
-            <p class="mb-0">No entries yet. Open the Trips page and come back.</p>
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+        <div>
+            <h2 class="tm-title mb-0">Activity Log</h2>
+            <p class="text-muted mb-0">Everything the app did since it started</p>
         </div>
-    }
-    else
-    {
-        <ul class="list-group list-group-flush">
-            @for (int i = Model.Count - 1; i >= 0; i--)
-            {
-                var entry = Model[i];
+        <a asp-action="Index" class="tm-btn tm-btn-outline">&larr; My Flights</a>
+    </div>
 
-                <li class="list-group-item py-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <span class="badge bg-dark font-monospace">@entry.Time.ToString("HH:mm:ss")</span>
-                        <strong>@entry.Action</strong>
-                    </div>
-                    @if (!string.IsNullOrEmpty(entry.Description))
-                    {
-                        <div class="text-muted mt-2">@entry.Description</div>
-                    }
-                </li>
-            }
-        </ul>
-    }
+    <div class="tm-log">
+        <div class="tm-log-header">
+            <strong>Entries</strong>
+            <span class="tm-log-count">@Model.Count</span>
+        </div>
+
+        @if (Model.Count == 0)
+        {
+            <div class="tm-empty m-3">
+                <div class="fs-1">📭</div>
+                <p class="mb-0">No entries yet. Open My Flights and come back.</p>
+            </div>
+        }
+        else
+        {
+            <ul class="tm-log-list">
+                @for (int i = Model.Count - 1; i >= 0; i--)
+                {
+                    var entry = Model[i];
+
+                    <li class="tm-log-item">
+                        <span class="tm-log-time">@entry.Time.ToString("HH:mm:ss")</span>
+                        <div>
+                            <div class="tm-log-action">@entry.Action</div>
+                            @if (!string.IsNullOrEmpty(entry.Description))
+                            {
+                                <div class="tm-meta">@entry.Description</div>
+                            }
+                        </div>
+                    </li>
+                }
+            </ul>
+        }
+    </div>
 </div>

@@ -1,0 +1,45 @@
+﻿@model TripMind.Models.BookingFormViewModel
+@{
+    ViewData["Title"] = "Book flight";
+    var today = DateTime.Today.ToString("yyyy-MM-dd");
+}
+
+<h1>Book your flight</h1>
+<p class="lead">@Model.From → @Model.Destination</p>
+
+<form asp-action="Book" asp-route-id="@Model.TripId" method="post" class="row g-3 mt-2" style="max-width:640px;">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="col-md-6">
+        <label class="form-label" for="StartDate">Departure date</label>
+        <input type="date" class="form-control" id="StartDate" name="StartDate"
+               min="@today" required value="@(Model.StartDate?.ToString("yyyy-MM-dd"))" />
+        <span asp-validation-for="StartDate" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label class="form-label" for="EndDate">Return date</label>
+        <input type="date" class="form-control" id="EndDate" name="EndDate"
+               min="@today" required value="@(Model.EndDate?.ToString("yyyy-MM-dd"))" />
+        <span asp-validation-for="EndDate" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label class="form-label" for="Travelers">Passengers</label>
+        <input type="number" class="form-control" id="Travelers" name="Travelers"
+               min="1" max="20" step="1" required value="@Model.Travelers" />
+        <span asp-validation-for="Travelers" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label class="form-label" for="Budget">Budget (€)</label>
+        <input type="number" class="form-control" id="Budget" name="Budget"
+               min="1" step="1" required value="@Model.Budget" />
+        <span asp-validation-for="Budget" class="text-danger"></span>
+    </div>
+
+    <div class="col-12">
+        <button type="submit" class="btn btn-primary">Confirm booking</button>
+        <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Back</a>
+    </div>
+</form>

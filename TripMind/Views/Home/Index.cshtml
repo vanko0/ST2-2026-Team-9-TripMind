@@ -1,8 +1,131 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model TripMind.Models.HomeIndexViewModel
+@{
+    ViewData["Title"] = "Home";
+
+    bool hasFilters =
+        !string.IsNullOrEmpty(Model.SelectedFrom) ||
+        !string.IsNullOrEmpty(Model.SelectedDestination) ||
+        Model.SelectedStartDate.HasValue ||
+        Model.SelectedEndDate.HasValue ||
+        Model.SelectedTravelers.HasValue ||
+        Model.SelectedMaxBudget.HasValue;
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="wz-hero"></div>
+
+<div class="wz-wrap wz-top">
+    <div class="wz-tab">✈ Flights</div>
+
+    <form method="get" asp-controller="Home" asp-action="Index" class="wz-card-search" id="searchForm">
+        <div class="wz-row">
+            <div class="wz-route">
+                <select id="from" name="from" aria-label="From">
+                    <option value="">From</option>
+                    @foreach (var o in Model.Origins)
+                    {
+                        <option value="@o" selected="@(o == Model.SelectedFrom)">@o</option>
+                    }
+                </select>
+
+                <button type="button" class="wz-swap" id="swapBtn" title="Swap" aria-label="Swap">⇄</button>
+
+                <select id="destination" name="destination" aria-label="Destination">
+                    <option value="">Destination</option>
+                    @foreach (var d in Model.Destinations)
+                    {
+                        <option value="@d" selected="@(d == Model.SelectedDestination)">@d</option>
+                    }
+                </select>
+            </div>
+
+            <button type="submit" class="wz-go">Let's go &rsaquo;</button>
+        </div>
+
+        <div class="wz-row wz-filters">
+            <label class="wz-field">
+                <span>Departure</span>
+                <input type="date" id="startDate" name="startDate"
+                       value="@(Model.SelectedStartDate?.ToString("yyyy-MM-dd"))" />
+            </label>
+
+            <label class="wz-field">
+                <span>Return</span>
+                <input type="date" id="endDate" name="endDate"
+                       value="@(Model.SelectedEndDate?.ToString("yyyy-MM-dd"))" />
+            </label>
+
+            <label class="wz-field">
+                <span>Passengers</span>
+                <input type="number" id="travelers" name="travelers" min="1" max="20" placeholder="Any"
+                       value="@Model.SelectedTravelers" />
+            </label>
+
+            <label class="wz-field">
+                <span>Max budget (€)</span>
+                <input type="number" id="maxBudget" name="maxBudget" min="0" step="50" placeholder="Any"
+                       value="@Model.SelectedMaxBudget" />
+            </label>
+        </div>
+    </form>
 </div>
+
+<div class="wz-wrap wz-results">
+    <h2 class="wz-title">Book direct and cheap flights with TripMind</h2>
+    <p class="wz-sub">
+        @if (!string.IsNullOrEmpty(Model.SelectedFrom))
+        {
+            <text>Cheap flights from <strong>@Model.SelectedFrom</strong></text>
+        }
+        else
+        {
+            <text>Popular flights</text>
+        }
+
+        @if (hasFilters)
+        {
+            <a asp-action="Index" class="wz-clear">Clear filters</a>
+        }
+    </p>
+
+    @if (!Model.Trips.Any())
+    {
+        <div class="wz-empty">No flights found for this search. Try different filters.</div>
+    }
+    else
+    {
+        <div class="wz-grid">
+            @foreach (var t in Model.Trips)
+            {
+                var slug = t.Destination.ToLower().Replace(" ", "-");
+
+                <a class="wz-card" asp-controller="Trips" asp-action="Book" asp-route-id="@t.Id">
+                    <div class="wz-card-img"
+                         style="background-image:url('/images/destinations/@(slug).jpg'), linear-gradient(135deg,#5a1a9e,#C6007E);">
+                    </div>
+                    <div class="wz-card-body">
+                        <div class="wz-dest">@t.Destination</div>
+                    </div>
+                </a>
+            }
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        const form = document.getElementById('searchForm');
+        const from = document.getElementById('from');
+        const dest = document.getElementById('destination');
+
+        from.addEventListener('change', () => form.submit());
+        dest.addEventListener('change', () => form.submit());
+
+        // Dates, passengers and budget apply when the user presses "Let's go"
+        document.getElementById('swapBtn').addEventListener('click', () => {
+            const tmp = from.value;
+            from.value = dest.value;
+            dest.value = tmp;
+            form.submit();
+        });
+    </script>
+}

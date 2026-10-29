@@ -6,6 +6,8 @@ public class Trip
 {
     public int Id { get; set; }
 
+
+    [Required] public string From { get; set; } = "";
     [Required] public string Destination { get; set; } = "";
 
     public DateOnly StartDate { get; set; }
@@ -17,4 +19,7 @@ public class Trip
     // Budget / Balanced / Luxury
 
     public string TravelStyle { get; set; } = "Balanced";
+
+    // false = offer shown on the home page, true = booked by the user (shown in My Flights)
+    public bool IsBooked { get; set; }
 }
