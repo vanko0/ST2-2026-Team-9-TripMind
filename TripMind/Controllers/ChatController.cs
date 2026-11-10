@@ -25,14 +25,18 @@ public class ChatController : ControllerBase
 
         try
         {
-            AppLogger.Instance.Log("Chat message received");
+            var preview = req.Message.Length > 60 ? req.Message[..60] + "..." : req.Message;
+            AppLogger.Instance.Log("Chat message received", $"User asked: \"{preview}\"");
+
             var reply = await _gemini.AskAsync(req.Message, req.History);
+
+            AppLogger.Instance.Log("Chat reply sent", $"Assistant answered ({reply.Length} characters)");
             return Ok(new ChatResponse(reply));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Chat failed");
-            AppLogger.Instance.Log($"Chat error: {ex.Message}");
+            AppLogger.Instance.Log("Chat error", ex.Message);
             return StatusCode(503, new { error = "Чатботът не е наличен в момента. Опитай пак по-късно." });
         }
     }
