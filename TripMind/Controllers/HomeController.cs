@@ -28,7 +28,7 @@ namespace TripMind.Controllers
             if (maxBudget is <= 0) maxBudget = null;
 
             // All trips, used to fill the From / Destination dropdowns
-            var allTrips = await _repo.GetFilteredAsync(null, null, null, null, isBooked: false);
+            var allTrips = await _repo.GetFilteredAsync(null, null, null, null, isBooked: false, logActivity: false);
 
             var trips = await _repo.GetFilteredAsync(
                 destination: destination,

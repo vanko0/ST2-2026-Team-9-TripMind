@@ -5,8 +5,6 @@ using TripMind.Services;
 
 namespace TripMind.Repositories;
 
-// Repository Pattern: all database access is hidden behind an interface,
-// so controllers never talk to EF Core directly.
 public class TripRepository : ITripRepository
 {
     private readonly TripMindDbContext _db;
@@ -25,7 +23,8 @@ public class TripRepository : ITripRepository
         DateTime? startDate = null,
         DateTime? endDate = null,
         int? travelers = null,
-        bool? isBooked = null)
+        bool? isBooked = null,
+        bool logActivity = true)
     {
         var query = _db.Trips.AsQueryable();
         var filters = new List<string>();
@@ -82,11 +81,13 @@ public class TripRepository : ITripRepository
 
         var result = await query.OrderBy(t => t.StartDate).ToListAsync();
 
+        if (!logActivity)
+            return result;
+
         var description = filters.Count == 0
             ? "No filters, all trips requested"
             : "Filters: " + string.Join(", ", filters);
 
-        // Singleton Pattern in use: the same AppLogger instance is shared by the whole app.
         AppLogger.Instance.Log("Trips filtered", $"{description}. Found {result.Count} trip(s).");
 
         return result;
@@ -105,6 +106,21 @@ public class TripRepository : ITripRepository
         if (existing == null)
             return false;
 
+        var changes = new List<string>();
+        void Track(string field, object? oldValue, object? newValue)
+        {
+            if (!Equals(oldValue, newValue))
+                changes.Add($"{field}: {oldValue} -> {newValue}");
+        }
+
+        Track("From", existing.From, trip.From);
+        Track("Destination", existing.Destination, trip.Destination);
+        Track("Departure", existing.StartDate.ToString("yyyy-MM-dd"), trip.StartDate.ToString("yyyy-MM-dd"));
+        Track("Return", existing.EndDate.ToString("yyyy-MM-dd"), trip.EndDate.ToString("yyyy-MM-dd"));
+        Track("Budget", existing.Budget, trip.Budget);
+        Track("Passengers", existing.Travelers, trip.Travelers);
+        Track("Style", existing.TravelStyle, trip.TravelStyle);
+
         existing.From = trip.From;
         existing.Destination = trip.Destination;
         existing.StartDate = trip.StartDate;
@@ -114,10 +130,16 @@ public class TripRepository : ITripRepository
         existing.TravelStyle = trip.TravelStyle;
 
         await _db.SaveChangesAsync();
+
+        var details = changes.Count == 0
+            ? "Saved without changes"
+            : string.Join(", ", changes);
+        AppLogger.Instance.Log("Trip updated",
+            $"{existing.From} -> {existing.Destination} (trip #{existing.Id}). {details}");
+
         return true;
     }
 
-    // BOOK: copy the offer into a new booked trip with the user's own values
     public async Task<Trip?> BookAsync(int offerId, int travelers, DateOnly startDate, DateOnly endDate, decimal budget)
     {
         var offer = await _db.Trips.FindAsync(offerId);
@@ -145,7 +167,6 @@ public class TripRepository : ITripRepository
         return booking;
     }
 
-    // CANCEL: remove a booking (offers are never touched)
     public async Task<bool> CancelBookingAsync(int id)
     {
         var existing = await _db.Trips.FindAsync(id);

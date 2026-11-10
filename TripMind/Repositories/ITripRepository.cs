@@ -12,7 +12,8 @@ public interface ITripRepository
         DateTime? startDate = null,
         DateTime? endDate = null,
         int? travelers = null,
-        bool? isBooked = null);
+        bool? isBooked = null,
+        bool logActivity = true);
 
     Task<Trip?> GetByIdAsync(int id);
 

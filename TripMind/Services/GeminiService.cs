@@ -55,7 +55,7 @@ public class GeminiService : IGeminiService
             ?? throw new InvalidOperationException("Липсва Gemini:ApiKey");
         var model = _config["Gemini:Model"] ?? "gemini-3.5-flash";
 
-        var trips = await _repo.GetFilteredAsync(null, null, null, null);
+        var trips = await _repo.GetFilteredAsync(null, null, null, null, logActivity: false);
         var tripsText = trips.Count == 0 ?
              "(няма запазени пътувания)"
             : string.Join("\n", trips.Take(20).Select(t =>
@@ -103,7 +103,7 @@ public class GeminiService : IGeminiService
                 break;
 
             res.Dispose();
-            await Task.Delay(1000 * attempt);   
+            await Task.Delay(1000 * attempt);
         }
 
         using (res)
